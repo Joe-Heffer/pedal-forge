@@ -153,7 +153,7 @@ APIs that take a string state get this JSON serialised; s1’s server accepts th
 
 ### The question bank
 
-The first bank has nine questions (`eval/questions.py`), chosen to cover each decision the assembler makes with the `blocks.js` vocabulary, plus one that detects requests the vocabulary cannot meet:
+The first bank has nine questions (`eval/questions.py`, whose wording is the prompt and is **chosen**), chosen to cover each decision the assembler makes with the `blocks.js` vocabulary, plus one that detects requests the vocabulary cannot meet:
 
 | Key | Type | Decides | Default (chosen) | Threshold (chosen) |
 |---|---|---|---|---|
@@ -267,10 +267,11 @@ Need measurement or a decision:
 
 1. Which backend to ship as the default local model, given the licence results in `docs/model-survey.md` and measured latency on typical player hardware (no GPU).
 2. Should low-confidence questions be asked one at a time, or as a single short form?
-3. Is a small typed-decision model needed at all, or would a well-built keyword table (the mock backend) reach the accuracy target? The evaluation answers this directly.
+3. Is a small typed-decision model needed at all, or would a well-built keyword table reach the accuracy target? The mock backend’s score cannot answer this: its cues and the evaluation items were written by the same person, so it scores well on the items it was written beside (88 % on the first run). A fair comparison needs items written by someone who has not seen the cues.
 4. Will faust-pedalkit accept a block manifest, and in which form (generated from `blocks.js`, or from annotations in `pedalkit.lib`)?
 5. How to treat the hosted API’s terms of service (logging, retention, training on inputs) before enabling it for players.
 6. The evaluation set is written by one person. How many items, from how many people, are needed before accuracy differences between backends mean anything? With 40 items, a difference of a few answers is within noise.
+7. faust-pedalkit reports latency with the `lv2:reportsLatency` port property, which the LV2 core specification now marks deprecated in favour of `lv2:designation lv2:latency` [14]. Worth raising there, separately, before Pedal Forge copies the pattern.
 
 ## Sources
 
