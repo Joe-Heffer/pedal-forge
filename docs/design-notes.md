@@ -13,7 +13,7 @@ Numbers in square brackets refer to the [source list](#sources).
 
 ## 1. The idea
 
-A player describes a sound in words: “fat, round bass drive that keeps the low end clean”, “thin, fizzy lo-fi guitar”, “just tighten the lows a little”. The plugin builds an effect chain from faust-pedalkit’s tested blocks [1], sets each block, and exposes the settings that matter on a small bank of macro controls the player can then turn by hand or automate.
+A player describes a sound in words: “fat, round bass drive that keeps the low end clean”, “thin, fizzy lo-fi guitar”, “just tighten the lows a little”. The plugin builds one effect (a single “pedal”, made of up to six of faust-pedalkit’s tested blocks [1]), sets each block, and exposes the settings that matter on a small bank of macro controls the player can then turn by hand or automate. Several pedals are several instances in the host (see [section 11](#11-user-experience)).
 
 What a player gets that existing tools do not give them:
 
@@ -51,7 +51,7 @@ Text-to-plugin generators exist (faust-pedalkit’s ecosystem page lists some [1
  ┌────────────────────────────────────────────────────────────────┐
  │ audio thread: input → [block] → [block] → … → limiter → output   │
  │ new chain fades in over the crossfade time while the old fades   │
- │ out; macro slots 1–8 drive the chain's mapped parameters         │
+ │ out; macro slots 1–6 drive the chain's mapped parameters         │
  └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -167,6 +167,14 @@ The first bank has nine questions (`eval/questions.py`, whose wording is the pro
 | `mid_shape` | choice: scooped, flat, boosted | Peaking EQ gain sign | `flat` | 0.50 |
 | `keep_lows` | yes/no | Parallel clean low path through a mix block | no | 0.65 |
 
+A tenth question is **proposed** and not yet in `eval/questions.py`:
+
+| Key | Type | Decides | Default (chosen) | Threshold (chosen) |
+|---|---|---|---|---|
+| `single_effect` | yes/no | Whether the description asks for one effect type. “No” means it names two or more (drive plus tremolo), and the plugin names the parts and builds none of them | yes | 0.65 |
+
+It overlaps with `in_vocabulary`. A request for drive plus tremolo is both two effects and partly out of vocabulary. The plugin checks `single_effect` first, then `in_vocabulary` for each part it names, so the message says “add another instance for the tremolo” when the tremolo is the part that cannot be built, and “the plugin has no tremolo block yet” otherwise. The rule and threshold come from the same reasoning as the other structural questions (they change the chain’s shape, so the threshold is high). The expected answer for `guitar-tremolo-drive` changes to `single_effect = no` when the question is added.
+
 Defaults are the least surprising setting: no drive, flat EQ, middle levels. Thresholds are **chosen** starting points: higher for questions that change the chain’s structure (instrument, in-vocabulary, whether to drive), lower for settings the player will adjust with the macros anyway. Choice thresholds sit above chance (0.50 against 0.25 for four options). They will be revised from the calibration results in `make eval`, and the revision recorded here.
 
 ### How confidence is used
@@ -191,11 +199,11 @@ Hosts store automation and saved state by parameter index or ID, so the paramete
 
 | Parameter | Range | Default | Confidence |
 |---|---|---|---|
-| Macro 1 … Macro 8 | 0 to 1 (shown as 0 to 100 %) | 0.5 | count and range **chosen** |
+| Macro 1 … Macro 6 | 0 to 1 (shown as 0 to 100 %) | 0.5 | count and range **chosen** |
 | Output | −24 to +12 dB | 0 dB | **chosen** |
 | Mix (dry/wet) | 0 to 100 % | 100 % | **chosen** |
 
-Eight macros (**chosen**) is enough for a six-block chain’s most useful controls (drive, ceiling, frequency, EQ gain, blend) without a wall of unlabelled knobs. Each assembled chain maps each macro to one block parameter with that parameter’s range and law; unused macros do nothing.
+Six macros (**chosen**; reduced from eight once the plugin was limited to one effect per instance) is enough for a single pedal’s most useful controls (drive, ceiling, frequency, EQ gain, blend) without a wall of unlabelled knobs. A typical pedal has three to five knobs; the sixth slot is spare. Each assembled chain maps each macro to one block parameter with that parameter’s range and law; unused macros do nothing.
 
 Renaming at run time, by format:
 
@@ -213,9 +221,9 @@ Blocks have different latencies (an oversampled waveshaper adds 32 samples [1]),
 
 Design (**chosen**):
 
-* The plugin reports a **fixed latency of 64 samples** at every sample rate, the cost of two oversampled runs, as in faust-pedalkit’s BassPreamp [2]. That is within faust-pedalkit’s 128-sample budget [2].
-* The assembler rejects any chain with more than two oversampled runs. Waveshapers with no filter between them share one oversampler, as in faust-pedalkit [2].
-* Every chain is padded with a delay to exactly 64 samples, and every dry or parallel path is aligned to the same total, so the reported latency is always true and never changes.
+* The plugin reports a **fixed latency of 32 samples** at every sample rate, the cost of one oversampled run (`pk.os4Latency` [1]). That is within faust-pedalkit’s 128-sample budget [2]. It is **chosen** because one instance holds one pedal, and players stack instances for more: three instances add 96 samples, where 64 each would add 192. It was 64 (two runs, as in faust-pedalkit’s BassPreamp [2]) in the first draft.
+* The assembler rejects any chain with more than one oversampled run. Waveshapers with no filter between them share one oversampler, as in faust-pedalkit [2]. A two-stage drive with a filter between the stages needs two runs, so it is two instances.
+* Every chain is padded with a delay to exactly 32 samples, and every dry or parallel path is aligned to the same total, so the reported latency is always true and never changes.
 * Swaps crossfade: the new chain is built and primed off the audio thread, then both chains run for the crossfade time and an equal-power fade moves from old to new. Crossfade time **50 ms** (**chosen**: long enough to avoid a click on sustained notes, short enough to feel immediate; needs listening). Macro changes are smoothed inside each block (`si.smoo`), as in faust-pedalkit.
 * CPU during a crossfade is up to twice one chain’s. The CPU target below allows for that.
 
@@ -224,8 +232,9 @@ Alternative rejected: report each chain’s own latency and restart the plugin o
 ## 9. Safety
 
 * **Every assembled chain ends in a limiter**: `pk.safety(0.989)`, the same transparent-below-90 % soft limiter faust-pedalkit uses at the end of every effect [1], placed after the Output gain and the Mix. The assembler adds it; no answer can remove it.
-* The assembler validates every chain spec before it reaches the audio thread: known block IDs, values within each parameter’s range, at most six blocks (**chosen**), at most two oversampled runs, latency equal to the fixed 64 samples. An invalid spec keeps the current chain and logs why.
+* The assembler validates every chain spec before it reaches the audio thread: known block IDs, values within each parameter’s range, at most six blocks (**chosen**), at most one oversampled run, latency equal to the fixed 32 samples. An invalid spec keeps the current chain and logs why.
 * Model output never reaches the audio thread except as a validated, fixed-size chain spec.
+* Each instance has its own limiter. Stacked instances put limiters in series; each is transparent below 90 %, so this should be inaudible, but a stack of three hot instances needs a listening check (section 12).
 
 Which faust-pedalkit tests apply to assembled chains [2]:
 
@@ -236,7 +245,7 @@ Which faust-pedalkit tests apply to assembled chains [2]:
 | Recovery (below −120 dBFS in the fourth second after a hot input) | Yes | Per chain, and across a swap |
 | CPU (≥ 20× real time in 64-sample blocks; tail ≤ 3× live signal) | Yes, adapted | Measured for the most expensive valid chain, and for two chains running during a crossfade |
 | Zipper (≤ 6 dB above steady state above 8 kHz on a full-range jump) | Yes, extended | For each macro, and for a chain swap (the crossfade must meet the same limit) |
-| Latency (reported matches measured, ≤ 128 samples) | Yes | Must equal 64 for every chain |
+| Latency (reported matches measured, ≤ 128 samples) | Yes | Must equal 32 for every chain |
 | Frequency response and harmonics | Per block, in faust-pedalkit | Assembled chains are combinations; targets come from the blocks’ own tests |
 
 ## 10. Measurable targets
@@ -247,21 +256,56 @@ Which faust-pedalkit tests apply to assembled chains [2]:
 | Calibration | ECE ≤ 0.10 on the evaluation set | **chosen**; s1 reports 0.083 on its own benchmark [6] |
 | Low-confidence rate | ≤ 25 % of answers below threshold | **chosen** |
 | Errors and refusals | 0 on the evaluation set, local backend | **chosen** |
-| Decision latency, local backend, all nine questions | median ≤ 1 s, 95th percentile ≤ 2 s, on the player’s machine | **chosen**; vendors report 27 ms to 0.8 s on varying hardware [6, 7, 8] |
+| Decision latency, local backend, all ten questions | median ≤ 1 s, 95th percentile ≤ 2 s, on the player’s machine | **chosen**; vendors report 27 ms to 0.8 s on varying hardware [6, 7, 8] |
 | Time from pressing Enter to hearing the new chain | ≤ 1.5 s median | **chosen** |
-| Plugin latency | fixed 64 samples | **chosen**, §8 |
+| Plugin latency | fixed 32 samples | **chosen**, §8 |
 | CPU, two chains crossfading | ≥ 20× real time per instance, 64-sample blocks | **chosen**, from faust-pedalkit [2] |
 | Audio-thread waits on model or network | none (checked by design review and a test that stalls the backend) | **chosen** |
 
-## 11. Open questions
+## 11. User experience
+
+Status: **chosen** throughout. None of this has been tested with players.
+
+### One effect per instance
+
+Pedal Forge builds one effect per instance. A player who wants a drive followed by a chorus inserts two instances, as they would put two plugins on a track. The host already provides ordering, bypass, presets and routing, so duplicating a pedalboard inside the plugin would add parameters and a fixed signal order the host does not need, and it would use the six-block, one-oversampler and macro limits up quickly.
+
+“One effect” does not mean one block. A bass drive with a tone filter, a mid EQ and a clean-low blend is one pedal built from four blocks. The test is whether a player would call it one pedal.
+
+* The assembler fixes the order of blocks, not the model: DC blocker and high-pass, then drive, then tone filter, then mid EQ, then blend, then output, then the limiter. The §5 conflict rules assume this order.
+* A description that names two effects (“overdriven guitar with a pulsing tremolo”) gets a message naming the parts and suggesting another instance. No partial chain is built. This is the `single_effect` question in §5, which is proposed and not yet implemented.
+* Time-based effects (delay, reverb, modulation) are out of vocabulary until faust-pedalkit has blocks for them. `in_vocabulary` catches them.
+
+### Starting state
+
+* **On insert:** transparent. The signal passes through unchanged apart from the fixed latency and the limiter. The description box has focus, with three or four clickable example descriptions beneath it (neutral wording, per `AGENTS.md`) that show the range of what the plugin understands. A plugin that changes the sound before the player has asked for anything is a surprise, and the host may process audio before the model has run.
+* **After a description the model cannot place:** the §5 defaults (no drive, flat EQ, middle levels). Whether the dry signal would be a better fallback is open question 2 in section 12.
+* **On session reload:** the stored chain spec, macro values and description text, with no call to the model. Reloading must rebuild the same sound, whatever model is installed, or whether one is installed at all. The description is kept for display and editing.
+
+### Presets and history
+
+* A factory preset is a description plus its stored chain spec, with a neutral name. It loads instantly and works with no model installed.
+* Each new description keeps the previous chain in a short history (depth 8, **chosen**, a convenience number with no measured basis), so the player can compare and undo.
+
+### Adjusting a sound
+
+A description such as “just tighten the lows a little” is an edit to the current chain, not a new sound. For the first version every description builds a new chain, and the player adjusts with the macros and the history. A later version can add a yes/no question, `is_adjustment`, and put the current chain in the state JSON. The state is an object (§5) so it can grow in this way without changing existing questions.
+
+### Asking the player
+
+When a question falls below its threshold (§5), the plugin asks a short question built from the same options, one at a time, at most one per description (**chosen**). Any further low-confidence answers take their defaults. This keeps the loop from typing to hearing short. Whether a single short form would be better is open (section 12, “need measurement or a decision”).
+
+## 12. Open questions
 
 Only listening can answer:
 
 1. Is the 50 ms equal-power crossfade inaudible on sustained notes and through high-gain chains, or does it need to be longer, or synchronised to a zero-crossing?
 2. Do the defaults (no drive, flat EQ, middle levels) sound like a sensible “didn’t understand” result, or should the fallback be the dry signal?
 3. Do the five levels of `drive_amount` and `brightness` map to settings players would agree with? The mapping from level to dB and Hz is still to be chosen, and needs ears.
-4. Does the 64-sample fixed latency feel acceptable when monitoring live at small buffer sizes?
+4. Does the 32-sample fixed latency feel acceptable when monitoring live at small buffer sizes, and when three instances are stacked (96 samples)?
 5. Are the macros the player most wants for each chain the ones the assembler picks?
+6. Do three stacked instances, each with its own limiter, sound the same as the same chains with only the last limiter?
+7. Does the transparent starting state feel right, or would players rather hear a starter chain as soon as they insert the plugin?
 
 Need measurement or a decision:
 
