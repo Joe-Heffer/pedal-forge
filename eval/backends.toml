@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2026 Joe Heffer
+# SPDX-License-Identifier: MIT
+# Backends for `make eval`, in the order they are run and plotted.
+#
+# An HTTP backend is skipped unless the environment variable named by
+# `base_url_env` is set (and `api_key_env`, when `key_required`). Keys are
+# only ever read from the environment. Paths, models and state formats are
+# from each project's README or source, checked on 2026-10-26
+# (docs/model-survey.md). timeout_s is chosen: 10 s is ten times the design
+# target for a local answer (docs/design-notes.md, section 10), so a slow but
+# working server is measured rather than cut off.
+
+[backends.mock]
+kind = "mock"
+
+# Hosted API, closed. Optional: needs PF_JEV_URL (e.g. https://api.typesafe.ai)
+# and TYPESAFE_API_KEY. Path and model aliases are reported by third parties.
+[backends.jev]
+kind = "http"
+description = "Hosted Jev (closed, API only)"
+base_url_env = "PF_JEV_URL"
+path = "/v1/systemone"
+model = "jev-latest"
+api_key_env = "TYPESAFE_API_KEY"
+key_required = true
+timeout_s = 10
+
+# Local OpenJev server, e.g. PF_OPENJEV_URL=http://127.0.0.1:8080.
+[backends.openjev]
+kind = "http"
+description = "OpenJev (DiffusionGemma 26B-A4B)"
+base_url_env = "PF_OPENJEV_URL"
+path = "/v1/systemone"
+model = "openjev-latest"
+api_key_env = "PF_OPENJEV_KEY"
+timeout_s = 10
+
+# Local s1 API server (api/server.py), e.g. PF_S1_URL=http://127.0.0.1:8000.
+# It takes the state as a JSON object and answers questions one at a time.
+[backends.s1]
+kind = "http"
+description = "s1 (Gemma 4 26B-A4B fine-tune)"
+base_url_env = "PF_S1_URL"
+path = "/v1/decisions"
+state_format = "object"
+timeout_s = 10
+
+# Local system-one server (Apple Silicon), e.g. PF_SYSTEM_ONE_URL=http://127.0.0.1:8399.
+[backends.system_one]
+kind = "http"
+description = "system-one (Qwen3-0.6B adapter)"
+base_url_env = "PF_SYSTEM_ONE_URL"
+path = "/v1/systemone"
+timeout_s = 10

@@ -1,0 +1,102 @@
+# SPDX-FileCopyrightText: 2026 Joe Heffer
+# SPDX-License-Identifier: MIT
+# Manufacturer and product names that must not appear in effect names, UI
+# text, prompts, evaluation items or file names (AGENTS.md, hard rule 2).
+# Read by tools/check-trademarks.py, which the `no-trademarks` pre-commit hook
+# runs. The first part is copied from faust-pedalkit's tools/trademarks.txt so
+# the two repositories refuse the same names; the second part adds names a
+# player is likely to type when describing a sound.
+#
+# One name per line. Matching ignores case, spacing, hyphens, underscores and
+# CamelCase, so "Sans Amp" also catches "SansAmp", "sans_amp" and "SANSAMP".
+# A name only matches as a whole word: "Boss" catches "BossDrive" but not
+# "emboss". Leave out names that are ordinary words (e.g. "Orange", "Rat",
+# "Zoom", "Jazz Bass"), or the check will flag normal prose; list the product
+# instead. Lines starting with # are comments.
+#
+# Decision-model projects (and their vendors) are named in docs/ and in the
+# backend configuration, which are not scanned for content. They are kept out
+# of prompts by review, not by this list, because the harness has to name the
+# backend it calls.
+# Reference hardware for the effects in this repo.
+Boss
+Roland
+ODB-3
+Bass OD
+Tech 21
+SansAmp
+Bass Driver DI
+Pro Co RAT
+
+# Other bass and pedal makers and products likely to be modelled.
+Aguilar
+Ampeg
+Darkglass
+Microtubes
+Dunlop
+MXR
+EBS
+Eden
+Electro-Harmonix
+EHX
+Big Muff
+Fender
+Gallien-Krueger
+Hartke
+Ibanez
+Tube Screamer
+TS808
+TS9
+Maxon
+Markbass
+Marshall
+Mesa Boogie
+Pro Co
+Strymon
+Walrus Audio
+Line 6
+TC Electronic
+
+# Added for Pedal Forge: instruments, amplifiers, pedals and modelling
+# products a player might name in a description.
+Gibson
+Les Paul
+Stratocaster
+Telecaster
+Rickenbacker
+Music Man
+Warwick
+Vox
+Peavey
+Hiwatt
+Sunn
+Soldano
+Bogner
+Diezel
+Engl
+Laney
+Blackstar
+Dumble
+Matchless
+Supro
+Klon
+Fuzz Face
+Uni-Vibe
+Cry Baby
+Whammy
+DigiTech
+Eventide
+Fulltone
+Keeley
+Wampler
+EarthQuaker
+Chase Bliss
+Behringer
+Kemper
+Axe-Fx
+Fractal Audio
+Neural DSP
+Positive Grid
+IK Multimedia
+AmpliTube
+ToneX

@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Joe Heffer
+# SPDX-License-Identifier: MIT
+# Development tools, installed into .venv by `make venv`. The harness core is
+# standard library only; matplotlib draws the SVG plots and is skipped with a
+# warning when missing. numpy is not used yet but matplotlib pulls it in.
+# Versions are the ones first tested on 2026-10-26.
+matplotlib==3.11.2
+pre-commit==4.7.0

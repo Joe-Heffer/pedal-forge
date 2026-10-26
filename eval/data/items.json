@@ -1,0 +1,597 @@
+{
+  "description": "Pedal Forge evaluation set. Expected answers are the author's judgement (provenance: chosen), not ground truth. Questions not listed under an item's expected answers are not scored for it.",
+  "bank": "eval/questions.py",
+  "items": [
+    {
+      "id": "bass-warm-drive-clean-lows",
+      "description": "Warm, round bass overdrive that keeps the low end clean underneath.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": [
+          "soft",
+          "asym"
+        ],
+        "drive_amount": [
+          1,
+          2
+        ],
+        "keep_lows": true
+      },
+      "reasoning": "Names bass and overdrive. 'Warm, round' points to smooth or tube-like saturation rather than hard clipping. 'Keeps the low end clean underneath' is the clean-blend case. Overdrive rather than distortion suggests light to moderate drive.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-edge-breakup",
+      "description": "Guitar sound that is clean when I play softly and just starts to break up when I dig in.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": [
+          "soft",
+          "asym"
+        ],
+        "drive_amount": [
+          1,
+          1
+        ]
+      },
+      "reasoning": "Describes the edge of break-up level exactly. Touch-sensitive break-up is a soft-knee behaviour, so soft or asymmetric tanh.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-pristine-clean",
+      "description": "Completely clean, pristine guitar with no distortion at all.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "drive_amount": [
+          0,
+          0
+        ],
+        "tone_filter": "none"
+      },
+      "reasoning": "Explicitly no distortion and nothing about tone, so no filter.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-thin-tighten",
+      "description": "Just tighten up the lows on my bass a little, it is too boomy in this room.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "tone_filter": "highpass",
+        "drive_amount": [
+          0,
+          0
+        ]
+      },
+      "reasoning": "Asks only to reduce boom, which is a high-pass. No drive asked for. 'Tighten' here is about the filter, not the clipping knee.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-dark-jazz",
+      "description": "Dark, mellow clean guitar tone with the treble rolled off for slow ballads.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "tone_filter": "lowpass",
+        "brightness": [
+          0,
+          1
+        ]
+      },
+      "reasoning": "Treble rolled off is a low-pass; dark and mellow put brightness at the dark end.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-heavy-tight",
+      "description": "Tight, aggressive high-gain guitar distortion for fast palm-muted riffs.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": "knee",
+        "drive_amount": [
+          3,
+          4
+        ]
+      },
+      "reasoning": "High gain with tightness and aggression suggests a firm knee clipper at a heavy setting.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-fuzz-wall",
+      "description": "Huge saturated fuzz guitar, a wall of sound that is almost square.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "drive_amount": [
+          4,
+          4
+        ]
+      },
+      "reasoning": "Saturated and near-square is the top level. The shaper is left open: several variants reach a square wave when driven this hard.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-growl-mids",
+      "description": "Growling bass drive with pushed mids so it cuts through a loud band.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "mid_shape": "boosted",
+        "tone_filter": "peak",
+        "drive_amount": [
+          2,
+          3
+        ]
+      },
+      "reasoning": "Pushed mids to cut through is a mid boost via the peaking EQ. Growl is more than a hint of drive.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-scooped",
+      "description": "Scooped, hollow guitar distortion with the mids cut right back.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "mid_shape": "scooped",
+        "tone_filter": "peak"
+      },
+      "reasoning": "Mid cut is the peaking EQ with negative gain.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-reverb-shimmer",
+      "description": "Dreamy shimmering reverb on clean guitar.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": false,
+        "needs_drive": false
+      },
+      "reasoning": "Reverb is not in the block vocabulary, so the plugin should say so rather than build a partial chain.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-octave-down",
+      "description": "Add an octave below my bass notes for a synth-like sub.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": false
+      },
+      "reasoning": "Pitch shifting is not in the vocabulary.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-slapback",
+      "description": "Short slapback echo on a twangy clean guitar.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": false,
+        "needs_drive": false
+      },
+      "reasoning": "Echo is a delay, which is not in the vocabulary.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-chorus-clean",
+      "description": "Lush chorus on a clean guitar for arpeggios.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": false,
+        "needs_drive": false
+      },
+      "reasoning": "Chorus is modulation, not in the vocabulary.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-clean-di",
+      "description": "Clean, natural bass, just as it is, maybe a touch brighter.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "brightness": [
+          2,
+          3
+        ]
+      },
+      "reasoning": "No drive. 'A touch brighter' is just above neutral. The filter type is left open because a gentle lift could be a high shelf, which the vocabulary lacks, or no filter.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-fuzz-blend",
+      "description": "Fuzzy, buzzy bass with the clean low end blended back in so it does not lose weight.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "keep_lows": true,
+        "drive_amount": [
+          3,
+          4
+        ]
+      },
+      "reasoning": "Blending the clean low end back in is the keep-lows path. Fuzz puts drive high.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-lofi-sputter",
+      "description": "Broken, sputtering lo-fi guitar that sounds like a dying speaker.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": "softhard",
+        "drive_amount": [
+          2,
+          4
+        ]
+      },
+      "reasoning": "Uneven, broken clipping matches the soft-above, hard-below variant. A dying speaker is at least moderate drive.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-telephone",
+      "description": "Thin telephone-style guitar for an intro, very little bass and lots of upper mids.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "tone_filter": [
+          "highpass",
+          "peak"
+        ],
+        "brightness": [
+          3,
+          4
+        ]
+      },
+      "reasoning": "A telephone sound removes lows and emphasises upper mids. Either a high-pass or a mid peak is a reasonable single filter. Drive is unclear and not scored.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-tube-warm",
+      "description": "Thick, warm tube-like crunch with lots of even harmonics.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": "asym",
+        "drive_amount": [
+          2,
+          2
+        ]
+      },
+      "reasoning": "Even harmonics come from asymmetric clipping. Crunch is the moderate level.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-subtle-grit",
+      "description": "Very subtle grit on bass, you should barely notice it until you play hard.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "drive_amount": [
+          1,
+          1
+        ]
+      },
+      "reasoning": "Barely noticeable until played hard is the edge of break-up.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-bright-crisp-clean",
+      "description": "Bright, crisp, sparkly clean guitar for funk rhythm.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "brightness": [
+          3,
+          4
+        ]
+      },
+      "reasoning": "Bright and sparkly put brightness at the top, without drive. Filter type left open.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-dark-dub",
+      "description": "Very dark, woolly dub bass with almost no treble.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "tone_filter": "lowpass",
+        "brightness": [
+          0,
+          0
+        ]
+      },
+      "reasoning": "Almost no treble is a strong low-pass and the darkest level.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "vague-angrier",
+      "description": "Make it sound angrier.",
+      "expected": {
+        "in_vocabulary": true,
+        "needs_drive": true
+      },
+      "reasoning": "Short and vague. Angrier most plausibly means more distortion. The instrument is not named, so it is not scored; a good model should be unsure about it.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "vague-better",
+      "description": "Make it sound better.",
+      "expected": {
+        "in_vocabulary": true
+      },
+      "reasoning": "Deliberately vague: nothing is scored except that it needs nothing outside the vocabulary. A calibrated model should give low confidence on most questions, and the plugin should fall back to defaults or ask.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-metal-tight",
+      "description": "Modern metal bass: tight, hard clipping on the top end, with the lows kept clean and tight.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": "knee",
+        "keep_lows": true,
+        "drive_amount": [
+          3,
+          4
+        ]
+      },
+      "reasoning": "Hard clipping and tightness suggest the knee clipper; lows kept clean is the blend path; metal is heavy.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-smooth-lead",
+      "description": "Smooth, creamy, singing lead guitar with long sustain.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": [
+          "soft",
+          "asym"
+        ],
+        "drive_amount": [
+          2,
+          3
+        ]
+      },
+      "reasoning": "Creamy sustain needs fair drive with a soft knee. The filter is left open.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-wah",
+      "description": "Funky wah on clean guitar.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": false,
+        "needs_drive": false
+      },
+      "reasoning": "A wah is a swept filter controlled by a pedal or envelope. The vocabulary has only static filters, so it should count as out of vocabulary.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-mid-honk",
+      "description": "Honky, nasal midrange bass tone for a punk band, slightly overdriven.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "mid_shape": "boosted",
+        "tone_filter": "peak",
+        "drive_amount": [
+          1,
+          2
+        ]
+      },
+      "reasoning": "Honky and nasal is a mid boost. Slightly overdriven is low to moderate drive.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-reduce-fizz",
+      "description": "My distortion is too fizzy, smooth out the top end.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "tone_filter": "lowpass",
+        "brightness": [
+          1,
+          2
+        ]
+      },
+      "reasoning": "Too fizzy on a distorted sound asks for a low-pass after the shaper. The player already has distortion, so a waveshaper stays.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-flat-clean",
+      "description": "Leave my bass flat and clean, I only want a safety limiter.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "tone_filter": "none",
+        "mid_shape": "flat",
+        "drive_amount": [
+          0,
+          0
+        ]
+      },
+      "reasoning": "Explicitly nothing; the limiter is always present anyway.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-tremolo-drive",
+      "description": "Overdriven guitar with a pulsing tremolo.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": false,
+        "needs_drive": true
+      },
+      "reasoning": "Tremolo is modulation and is not in the vocabulary, even though the drive part is.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-gentle-warmth",
+      "description": "Add a gentle warmth to clean guitar, like a good amp just starting to work.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": "soft",
+        "drive_amount": [
+          0,
+          1
+        ]
+      },
+      "reasoning": "Gentle warmth is light saturation from a soft shaper. Whether that counts as clean or the edge of break-up is unclear, so both are accepted.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-synthy-square",
+      "description": "Square-wave, synth-like bass fuzz with the low end kept intact.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "keep_lows": true,
+        "drive_amount": [
+          4,
+          4
+        ]
+      },
+      "reasoning": "Square wave is maximum saturation. Low end intact is the blend path.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-cut-through-mix",
+      "description": "Rhythm guitar that cuts through a busy mix, moderate crunch.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "mid_shape": "boosted",
+        "drive_amount": [
+          2,
+          2
+        ]
+      },
+      "reasoning": "Cutting through a mix is a mid push. Moderate crunch is level 2.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-no-mud",
+      "description": "Remove the mud from my overdriven bass without losing the punch.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "tone_filter": [
+          "highpass",
+          "peak"
+        ]
+      },
+      "reasoning": "Mud sits in the low mids. A gentle high-pass or a low-mid cut both answer it. Losing punch argues against an aggressive high-pass, but the filter type is the scored part.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-rotary",
+      "description": "Swirling rotary speaker sound on an organ-like guitar part.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": false
+      },
+      "reasoning": "A rotary speaker is modulation, not in the vocabulary.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-gritty-uneven",
+      "description": "Gritty, ragged, uneven bass distortion that sounds broken in a good way.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "shaper": "softhard"
+      },
+      "reasoning": "Ragged, uneven clipping matches the soft-above, hard-below variant.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-glassy-bright",
+      "description": "Glassy, very bright clean guitar, almost piercing.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "brightness": [
+          4,
+          4
+        ]
+      },
+      "reasoning": "Very bright and piercing is the top level.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-fingerstyle-warm",
+      "description": "Warm fingerstyle bass for soul, darker than usual, no dirt.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": true,
+        "needs_drive": false,
+        "tone_filter": "lowpass",
+        "brightness": [
+          1,
+          1
+        ]
+      },
+      "reasoning": "Darker than usual is one step dark; no dirt means no drive.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "guitar-heavy-dark",
+      "description": "Heavy, dark, doom-style guitar distortion, thick and slow.",
+      "expected": {
+        "instrument": "guitar",
+        "in_vocabulary": true,
+        "needs_drive": true,
+        "drive_amount": [
+          3,
+          4
+        ],
+        "brightness": [
+          0,
+          1
+        ]
+      },
+      "reasoning": "Heavy and dark on both axes. Thick might suggest asymmetric clipping, but the shaper is left open.",
+      "provenance": "chosen"
+    },
+    {
+      "id": "bass-loop-layers",
+      "description": "Loop my bass line and layer distorted parts on top.",
+      "expected": {
+        "instrument": "bass",
+        "in_vocabulary": false,
+        "needs_drive": true
+      },
+      "reasoning": "Looping is outside the vocabulary.",
+      "provenance": "chosen"
+    }
+  ]
+}
