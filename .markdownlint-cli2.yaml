@@ -1,0 +1,14 @@
+# Markdown style. Prose is not hard-wrapped and tables carry long rows, so
+# line length is not enforced.
+config:
+  default: true
+  MD013: false  # line length
+  MD033: false  # inline HTML such as <sub> or <br>
+  MD060: false  # table pipe spacing
+  MD024:
+    siblings_only: true
+ignores:
+  - build/**
+  - tests/out/**
+  - .claude/worktrees/**
+  - .venv/**

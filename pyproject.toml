@@ -1,0 +1,16 @@
+# Tool configuration only. The evaluation harness runs as `python -m eval.run`
+# from the repository root and is not installed as a package.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, isort, pyupgrade, bugbear, numpy-specific rules.
+select = ["E", "W", "F", "I", "UP", "B", "NPY"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["eval"]
+
+[tool.codespell]
+skip = "./build,./out,./.git,./.claude,./.venv"

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, tests and mock evaluation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pip install -r requirements.txt
+      - name: Pre-commit hooks
+        run: make check PYTHON=python PRE_COMMIT=pre-commit
+      - name: Harness tests (with matplotlib)
+        run: make test PYTHON=python
+      # No backend is configured in CI, so this runs the mock backend only. It
+      # checks that the harness, CSV and plots work end to end; the numbers say
+      # nothing about any model.
+      - name: Mock evaluation
+        run: make eval PYTHON=python
+      - name: Upload evaluation output
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: eval-output
+          path: out/
+          if-no-files-found: ignore

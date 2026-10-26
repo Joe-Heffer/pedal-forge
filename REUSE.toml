@@ -1,0 +1,27 @@
+# Licensing for files that carry no SPDX header of their own
+# (https://reuse.software/spec-3.3/). Code files carry headers instead.
+# Check with `reuse lint` (also run by pre-commit).
+version = 1
+
+# Design notes, the model survey and other documentation.
+[[annotations]]
+path = "docs/**"
+SPDX-FileCopyrightText = "2026 Joe Heffer"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Project Markdown, configuration and data files that cannot hold comments.
+# The evaluation items are hand-written judgements, licensed with the code so
+# they can be reused alongside the harness.
+[[annotations]]
+path = [
+  "*.md",
+  ".gitignore",
+  ".markdownlint-cli2.yaml",
+  ".pre-commit-config.yaml",
+  ".github/**",
+  "pyproject.toml",
+  "tools/en-gb.codespell",
+  "eval/data/*.json",
+]
+SPDX-FileCopyrightText = "2026 Joe Heffer"
+SPDX-License-Identifier = "MIT"

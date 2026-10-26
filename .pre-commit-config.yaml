@@ -1,0 +1,95 @@
+# Pre-commit hooks for this repo. Install once with `pre-commit install`;
+# run everything with `make check` (`pre-commit run --all-files`). CI runs the
+# same hooks. The upstream hooks and their pins follow faust-pedalkit's
+# .pre-commit-config.yaml, minus the Faust, schematic and effect hooks, which
+# have nothing to check until this repo has DSP.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.2
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.24.0
+    hooks:
+      - id: markdownlint-cli2
+
+  # GitHub Actions workflows: syntax, expressions, job graph and action inputs.
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
+      # General typos everywhere.
+      - id: codespell
+        name: codespell (typos)
+        additional_dependencies: [tomli]
+      # Hard rule 3: British English in prose. Only prose-bearing files are
+      # checked, so code such as matplotlib's `color=` is not flagged. The
+      # evaluation items are prose a player would type.
+      - id: codespell
+        name: codespell (British English)
+        args:
+          - --builtin=
+          - --dictionary=tools/en-gb.codespell
+        files: \.(md|json)$
+
+  # Every file has a machine-readable licence (SPDX header or REUSE.toml).
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v6.2.0
+    hooks:
+      - id: reuse
+
+  - repo: local
+    hooks:
+      # Generated files live only in build/ and out/.
+      - id: no-generated-files
+        name: no generated files (build/, out/)
+        language: fail
+        entry: generated files belong in build/ or out/ and must not be committed
+        files: ^(build|out)/
+      # Hard rule 2: no manufacturer or product names in file names, or in
+      # eval/, prompts/ and src/. docs/ may name hardware to identify it.
+      # Deny-list: tools/trademarks.txt.
+      - id: no-trademarks
+        name: no trademarks in names, prompts and UI text
+        language: python
+        entry: tools/check-trademarks.py
+      # Workflows grant no write scope at the top level, never `write-all`,
+      # and pin every action to a version tag or SHA (tools/check-workflows.py).
+      - id: workflow-permissions
+        name: workflow permissions and action refs
+        language: python
+        additional_dependencies: [pyyaml]
+        entry: tools/check-workflows.py
+        files: ^\.github/workflows/.*\.ya?ml$
+      # The harness's own tests and the evaluation set's validation. They use
+      # the standard library only; tests that need matplotlib skip without it.
+      - id: eval-tests
+        name: evaluation harness tests
+        language: python
+        entry: python -m unittest discover -s eval/tests -t . -q
+        files: ^(eval|tools)/
+        pass_filenames: false
