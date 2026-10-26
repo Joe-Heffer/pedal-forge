@@ -18,7 +18,7 @@ The plugin itself will target LV2, VST3 and CLAP on Linux, like faust-pedalkit.
 
 ```sh
 make venv     # .venv with matplotlib and pre-commit (the harness core is standard library only)
-make test     # the harness's own tests
+make test     # the harness's tests and the tests for the pre-commit checks
 make eval     # run the evaluation set; with nothing configured, only the mock backend runs
 make check    # every pre-commit hook, as CI runs them
 ```
@@ -43,7 +43,8 @@ The hosted API needs `PF_JEV_URL` and `TYPESAFE_API_KEY`. See [`docs/model-surve
 | `docs/` | Design notes and model survey (CC-BY-4.0) |
 | `eval/` | Evaluation harness, backends, metrics, plots and tests |
 | `eval/data/items.json` | The hand-written evaluation set (chosen values, with reasoning) |
-| `tools/` | Pre-commit checks: trademarks, workflow permissions, British spellings |
+| `tools/` | Pre-commit checks (trademarks, workflow permissions) and their tests |
+| `.github/` | CI, CodeQL, Dependabot, dependency review, and the pull request and issue templates |
 | `out/` | Generated results (not committed) |
 
 ## Licence

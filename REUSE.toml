@@ -15,6 +15,7 @@ SPDX-License-Identifier = "CC-BY-4.0"
 [[annotations]]
 path = [
   "*.md",
+  ".editorconfig",
   ".gitignore",
   ".markdownlint-cli2.yaml",
   ".pre-commit-config.yaml",

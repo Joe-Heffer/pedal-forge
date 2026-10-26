@@ -1,0 +1,30 @@
+name: Bug in the harness or checks
+description: Something in eval/, tools/ or the build is wrong
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        For a wrong answer in the evaluation set, use the design or evaluation
+        form instead. Items are judgements, so a disputed answer needs its
+        reasoning argued, not just reported.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you ran, what you expected and what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: The relevant lines of `make test`, `make check` or `make eval`.
+      render: text
+  - type: input
+    id: environment
+    attributes:
+      label: Python version and OS
+      placeholder: "3.13 on Ubuntu 24.04"
+    validations:
+      required: true

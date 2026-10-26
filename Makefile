@@ -5,7 +5,7 @@
 #
 #   make venv         create .venv and install requirements.txt into it
 #   make check        run every pre-commit hook on every file (as CI does)
-#   make test         run the evaluation harness's own tests
+#   make test         run the evaluation harness's and the checks' own tests
 #   make eval         run the evaluation set against every configured backend, writing out/
 #   make format       fix Python lint and formatting with ruff
 #   make clean        remove build/ and out/ (never a custom OUT)
@@ -14,6 +14,10 @@
 # Variables: PYTHON and PRE_COMMIT (default: the ones in .venv if it exists),
 # OUT (default out), EVAL_ARGS (extra arguments for `python -m eval.run`, e.g.
 # EVAL_ARGS="--backend mock --repeat 3").
+
+# No __pycache__ from our own runs: REUSE's lint otherwise reports the bytecode
+# of the tests as unlicensed on the next `make check`.
+export PYTHONDONTWRITEBYTECODE := 1
 
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 PRE_COMMIT ?= $(if $(wildcard .venv/bin/pre-commit),.venv/bin/pre-commit,pre-commit)
@@ -34,6 +38,7 @@ check:
 
 test:
 	$(PYTHON) -m unittest discover -s eval/tests -t . -v
+	$(PYTHON) -m unittest discover -s tools/tests -t . -v
 
 eval:
 	$(PYTHON) -m eval.run --out $(OUT) $(EVAL_ARGS)
