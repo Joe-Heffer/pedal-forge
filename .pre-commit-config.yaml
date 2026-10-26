@@ -91,5 +91,14 @@ repos:
         name: evaluation harness tests
         language: python
         entry: python -m unittest discover -s eval/tests -t . -q
-        files: ^(eval|tools)/
+        files: ^eval/
+        pass_filenames: false
+      # The checks' own tests. check-workflows.py needs PyYAML, which
+      # pre-commit installs for its local hooks.
+      - id: tools-tests
+        name: tests for the pre-commit checks
+        language: python
+        additional_dependencies: [pyyaml]
+        entry: python -m unittest discover -s tools/tests -t . -q
+        files: ^tools/
         pass_filenames: false

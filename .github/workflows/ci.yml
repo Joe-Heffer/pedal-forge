@@ -14,16 +14,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
-    name: Lint, tests and mock evaluation
+  hooks:
+    name: Pre-commit hooks
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.x"
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
       - uses: actions/cache@v6
         with:
           path: ~/.cache/pre-commit
@@ -31,17 +34,64 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Pre-commit hooks
         run: make check PYTHON=python PRE_COMMIT=pre-commit
-      - name: Harness tests (with matplotlib)
+
+  test:
+    name: Tests and mock evaluation (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.11 is the floor set by pyproject.toml (ruff target-version); 3.13
+        # is what the hooks job and local development use.
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Harness and check tests (with matplotlib)
         run: make test PYTHON=python
       # No backend is configured in CI, so this runs the mock backend only. It
       # checks that the harness, CSV and plots work end to end; the numbers say
       # nothing about any model.
       - name: Mock evaluation
         run: make eval PYTHON=python
+      - name: Summarise mock evaluation
+        if: always()
+        run: |
+          {
+            echo "### Mock evaluation (Python ${{ matrix.python-version }})"
+            echo
+            echo "The mock backend is a keyword heuristic. These numbers say nothing about any model."
+            echo
+            echo '```csv'
+            cat out/summary.csv 2>/dev/null || echo "No summary was written."
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload evaluation output
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: eval-output
+          name: eval-output-${{ matrix.python-version }}
           path: out/
           if-no-files-found: ignore
+          retention-days: 14
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Fails a pull request that adds a dependency with a known vulnerability
+      # at high or critical severity. Licences are checked by hand against
+      # docs/model-survey.md (AGENTS.md, hard rule 8), not by this step.
+      - uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high

@@ -1,0 +1,30 @@
+name: Design or evaluation change
+description: A change to a question, threshold, default, expected answer or design decision
+labels: [design]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        AGENTS.md asks for notes before code. Describe the change here first,
+        so it can be written into docs/design-notes.md before anything else.
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: What should change, and what it replaces.
+    validations:
+      required: true
+  - type: textarea
+    id: reasoning
+    attributes:
+      label: Reasoning and source
+      description: >
+        Why. For a constant, say whether it is documented, reported, inferred or
+        chosen, and link any source.
+    validations:
+      required: true
+  - type: textarea
+    id: listening
+    attributes:
+      label: What a person should check
+      description: For a change that affects sound, what to listen for and which value to adjust.

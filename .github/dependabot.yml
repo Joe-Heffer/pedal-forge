@@ -1,0 +1,30 @@
+# Weekly update pull requests for the pins this repo relies on. Versions stay
+# pinned: Dependabot proposes a bump, CI and the pre-commit hooks check it.
+# The workflow checker (tools/check-workflows.py) needs every action pinned
+# to a tag or SHA, so Dependabot keeping those tags current matters.
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: pre-commit
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: deps

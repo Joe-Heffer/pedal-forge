@@ -37,14 +37,14 @@ Notes come before code. Update `docs/design-notes.md` first, then the harness or
 * `make eval` runs `eval/data/items.json` against every backend in `eval/backends.toml` whose environment variables are set, plus the mock backend, and writes `out/results.csv`, `out/summary.csv` and SVG plots. Backends that are not configured are skipped with a message.
 * The items are **chosen**: they are the maintainer’s judgement of the right answer, not ground truth. Each one carries its reasoning. A change to an expected answer needs a reason in its `reasoning` field.
 * Questions come from the fixed bank in `eval/questions.py`, so every backend sees the same wording. Adding a question means adding it there with its default and threshold, then documenting it in the design notes.
-* `make test` runs the harness’s tests (standard library `unittest`). Tests that need matplotlib skip without it.
+* `make test` runs the harness’s tests and the tests for `tools/` (standard library `unittest`). Tests that need matplotlib skip without it.
 * Generated files go only in `build/` and `out/`. Never commit them.
 
 ## Build mechanics
 
 * `make help` lists the targets: `venv`, `check`, `test`, `eval`, `format`, `clean`.
 * `make venv` creates `.venv/` and installs `requirements.txt` (matplotlib and pre-commit). The harness core uses only the Python standard library. Ask before adding any other dependency.
-* `make check` runs `pre-commit run --all-files`, as CI does (`.github/workflows/ci.yml`). CI also runs `make test` and a mock-only `make eval`, and uploads `out/`.
+* `make check` runs `pre-commit run --all-files`, as CI does (`.github/workflows/ci.yml`). CI also runs `make test` and a mock-only `make eval` on Python 3.11 and 3.13, and uploads `out/`. CodeQL scans the Python and the workflows, Dependabot proposes updates to the pins, and pull requests get a dependency review (`.github/`).
 * `make clean` removes `build/` and `out/` only.
 
 ## Reporting back
