@@ -58,7 +58,7 @@ repos:
 
   # Every file has a machine-readable licence (SPDX header or REUSE.toml).
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v6.2.0
+    rev: v6.3.0
     hooks:
       - id: reuse
 
